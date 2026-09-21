@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Satisfacción - Ferretería Cuéllar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QRCode.js para generar códigos QR dinámicos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        ferre: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans selection:bg-ferre-500 selection:text-white">
+
+    <!-- Header Minimalista y Estilizado -->
+    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/80 py-4 px-4 sticky top-0 z-30 shadow-md">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-ferre-600 to-amber-500 p-2.5 rounded-xl text-white shadow-lg">
+                    <i class="fa-solid fa-store text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+                        Ferretería Cuéllar
+                    </h1>
+                    <p class="text-[11px] text-slate-400">Encuesta de Experiencia al Cliente</p>
+                </div>
+            </div>
+            <div id="step-indicator" class="text-xs font-semibold bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700/80 text-ferre-400 hidden">
+                Paso <span id="current-step">1</span> de 4
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal Adaptable para Móviles (Escaneo QR) -->
+    <main class="flex-grow max-w-md w-full mx-auto px-4 py-6 flex items-center justify-center">
+        
+        <div class="w-full bg-slate-800/90 backdrop-blur-xl border border-slate-700/80 rounded-3xl shadow-2xl p-6 sm:p-8 relative overflow-hidden transition-all duration-300">
+            
+            <!-- PANTALLA 1: Bienvenida amigable -->
+            <div id="screen-welcome" class="survey-screen space-y-6 text-center animate-fade-in">
+                <div class="w-20 h-20 bg-gradient-to-tr from-ferre-600/20 to-amber-500/20 border border-ferre-500/30 rounded-3xl flex items-center justify-center mx-auto text-ferre-400 text-3xl shadow-inner">
+                    <i class="fa-solid fa-qrcode animate-pulse"></i>
+                </div>
+                
+                <div class="space-y-2">
+                    <span class="text-xs font-semibold px-3 py-1 bg-ferre-500/20 text-ferre-400 rounded-full border border-ferre-500/30 uppercase tracking-wider">¡Gracias por visitarnos!</span>
+                    <h2 class="text-2xl font-bold text-white tracking-tight mt-2">¿Cómo fue tu experiencia hoy?</h2>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Tus comentarios nos ayudan a mejorar nuestro servicio en mostrador, disponibilidad de materiales y atención. ¡Te tomará menos de 1 minuto!
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/60 text-left space-y-2 text-xs text-slate-400">
+                    <div class="flex items-center gap-2 text-slate-300 font-medium">
+                        <i class="fa-solid fa-gift text-ferre-400"></i> Beneficio por opinar:
+                    </div>
+                    <p>Al finalizar recibirás un cupón digital canjeable por un <strong>5% de descuento</strong> en tu próxima compra de materiales o herramientas.</p>
+                </div>
+
+                <button type="button" onclick="goToScreen(2)" class="w-full bg-gradient-to-r from-ferre-600 to-amber-500 hover:opacity-95 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                    <span>Iniciar Encuesta</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- PANTALLA 2: Calificación General y Rapidez -->
+            <div id="screen-2" class="survey-screen space-y-6 hidden">
+                <div class="space-y-1">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> Atención y Rapidez
+                    </h3>
+                    <p class="text-xs text-slate-400">Evalúa la agilidad en la caja/mostrador y la amabilidad del personal.</p>
+                </div>
+
+                <div class="space-y-5">
+                    <!-- Calificación por estrellas interactiva -->
+                    <div class="bg-slate-900/50 p-5 rounded-2xl border border-slate-700/60 text-center space-y-3">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wide">Calificación general de atención</label>
+                        <div id="star-container" class="flex justify-center gap-2 text-2xl">
+                            <button type="button" onclick="setRating(1)" class="star-btn text-slate-600 hover:text-amber-400 transition-colors p-1"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(2)" class="star-btn text-slate-600 hover:text-amber-400 transition-colors p-1"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(3)" class="star-btn text-slate-600 hover:text-amber-400 transition-colors p-1"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(4)" class="star-btn text-slate-600 hover:text-amber-400 transition-colors p-1"><i class="fa-solid fa-star"></i></button>
+                            <button type="button" onclick="setRating(5)" class="star-btn text-slate-600 hover:text-amber-400 transition-colors p-1"><i class="fa-solid fa-star"></i></button>
+                        </div>
+                        <p id="rating-text" class="text-xs font-medium text-amber-400 h-4">Selecciona una estrella</p>
+                        <input type="hidden" id="input-rating" value="0">
+                    </div>
+
+                    <!-- Rapidez en la atención -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-300">¿Cómo calificas el tiempo de espera para ser atendido?</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="rapidez" value="Muy Rápido" class="peer sr-only">
+                                <div class="bg-slate-900 border border-slate-700 peer-checked:bg-ferre-600 peer-checked:border-ferre-500 peer-checked:text-white p-3 rounded-xl text-center text-xs font-medium text-slate-300 transition-all hover:border-slate-500">
+                                    🚀 Muy Rápido
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="rapidez" value="Normal" class="peer sr-only">
+                                <div class="bg-slate-900 border border-slate-700 peer-checked:bg-ferre-600 peer-checked:border-ferre-500 peer-checked:text-white p-3 rounded-xl text-center text-xs font-medium text-slate-300 transition-all hover:border-slate-500">
+                                    ⏱️ Normal
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="rapidez" value="Lento" class="peer sr-only">
+                                <div class="bg-slate-900 border border-slate-700 peer-checked:bg-ferre-600 peer-checked:border-ferre-500 peer-checked:text-white p-3 rounded-xl text-center text-xs font-medium text-slate-300 transition-all hover:border-slate-500">
+                                    ⏳ Lento
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="goToScreen(1)" class="w-1/3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 rounded-xl text-sm transition-all">
+                        Anterior
+                    </button>
+                    <button type="button" onclick="validateScreen2()" class="w-2/3 bg-gradient-to-r from-ferre-600 to-amber-500 hover:opacity-95 text-white font-semibold py-3 rounded-xl text-sm shadow-lg transition-all flex items-center justify-center gap-2">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 3: Disponibilidad y Experiencia de Local -->
+            <div id="screen-3" class="survey-screen space-y-6 hidden">
+                <div class="space-y-1">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-ferre-400"></i> Productos y Local
+                    </h3>
+                    <p class="text-xs text-slate-400">Cuéntanos sobre el stock de materiales y orden del establecimiento.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Disponibilidad de productos -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-300">¿Encontraste todos los materiales que buscabas (cemento, herramientas, tuberías, etc.)?</label>
+                        <select id="select-stock" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-ferre-500">
+                            <option value="">Selecciona una respuesta...</option>
+                            <option value="Sí, encontré todo">Sí, encontré todo lo que necesitaba</option>
+                            <option value="Faltaron algunos productos">Me faltaron algunos productos específicos</option>
+                            <option value="No había inventario">Había escasez en varios artículos</option>
+                        </select>
+                    </div>
+
+                    <!-- Limpieza y Orden -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-300">¿Cómo calificas la limpieza y organización de la ferretería?</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="orden" value="Excelente" class="peer sr-only">
+                                <div class="bg-slate-900 border border-slate-700 peer-checked:bg-ferre-600 peer-checked:border-ferre-500 peer-checked:text-white p-3 rounded-xl text-center text-xs font-medium text-slate-300 transition-all hover:border-slate-500">
+                                    ✨ Excelente y ordenado
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="orden" value="Regular" class="peer sr-only">
+                                <div class="bg-slate-900 border border-slate-700 peer-checked:bg-ferre-600 peer-checked:border-ferre-500 peer-checked:text-white p-3 rounded-xl text-center text-xs font-medium text-slate-300 transition-all hover:border-slate-500">
+                                    🔧 Regular / Puede mejorar
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="goToScreen(2)" class="w-1/3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 rounded-xl text-sm transition-all">
+                        Anterior
+                    </button>
+                    <button type="button" onclick="validateScreen3()" class="w-2/3 bg-gradient-to-r from-ferre-600 to-amber-500 hover:opacity-95 text-white font-semibold py-3 rounded-xl text-sm shadow-lg transition-all flex items-center justify-center gap-2">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 4: Comentarios abiertos y Finalización -->
+            <div id="screen-4" class="survey-screen space-y-5 hidden">
+                <div class="space-y-1">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-comment-dots text-amber-400"></i> Comentarios Finales
+                    </h3>
+                    <p class="text-xs text-slate-400">¿Tienes alguna sugerencia adicional o producto que te gustaría que trajéramos?</p>
+                </div>
+
+                <div class="space-y-4">
+                    <textarea id="input-comentarios" rows="3" placeholder="Escribe aquí tus sugerencias..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-ferre-500"></textarea>
+                    
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-medium text-slate-300">Tu Teléfono o Nombre (Opcional para sorteos)</label>
+                        <input type="text" id="input-cliente" placeholder="Ej. Juan Pérez o 3001234567" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-ferre-500">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="goToScreen(3)" class="w-1/3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 rounded-xl text-sm transition-all">
+                        Anterior
+                    </button>
+                    <button type="button" onclick="submitSurvey()" class="w-2/3 bg-gradient-to-r from-emerald-600 to-teal-500 hover:opacity-95 text-white font-bold py-3 rounded-xl text-sm shadow-lg transition-all flex items-center justify-center gap-2">
+                        <span>Finalizar y Obtener QR</span>
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 5: Pantalla de Agradecimiento y Código QR de Cupón -->
+            <div id="screen-success" class="survey-screen space-y-5 text-center hidden">
+                <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-2xl shadow-lg">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-white">¡Gracias por tu Opinión!</h2>
+                    <p class="text-xs text-slate-300">Tu respuesta ha sido registrada en el sistema inteligente de la ferretería.</p>
+                </div>
+
+                <!-- Tarjeta Cupón con QR -->
+                <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl border border-amber-500/30 shadow-xl space-y-3 relative overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-16 h-16 bg-amber-500/10 rounded-full blur-xl"></div>
+                    
+                    <div class="text-xs uppercase font-bold text-amber-400 tracking-wider">Cupón Exclusivo - 5% Desct.</div>
+                    
+                    <!-- Contenedor del Código QR generado dinámicamente -->
+                    <div id="qrcode-container" class="bg-white p-3 rounded-xl w-36 h-36 mx-auto flex items-center justify-center shadow-md">
+                        <!-- El script insertará el QR aquí -->
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="text-[11px] text-slate-400">Código de Descuento Único:</div>
+                        <div id="coupon-code-text" class="text-base font-mono font-bold text-white bg-slate-800 py-1 px-3 rounded-lg border border-slate-700 tracking-widest inline-block">
+                            FC-5RF-992
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 leading-tight">
+                        Presenta este código QR o número en caja en tu próxima compra para aplicar tu beneficio.
+                    </p>
+                </div>
+
+                <button type="button" onclick="restartSurvey()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 rounded-xl text-xs transition-all">
+                    Realizar otra respuesta
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/40 border-t border-slate-800 text-center py-4 text-[11px] text-slate-500">
+        <p>Ferretería Cuéllar &copy; 2026 - Sistema Inteligente de Inventarios y Calidad</p>
+    </footer>
+
+    <!-- Script de Interactividad -->
+    <script>
+        let currentScreen = 1;
+        let selectedRating = 0;
+
+        function goToScreen(screenNum) {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.survey-screen').forEach(el => el.classList.add('hidden'));
+            
+            // Mostrar pantalla objetivo
+            if (screenNum === 1) {
+                document.getElementById('screen-welcome').classList.remove('hidden');
+                document.getElementById('step-indicator').classList.add('hidden');
+            } else if (screenNum === 5) {
+                document.getElementById('screen-success').classList.remove('hidden');
+                document.getElementById('step-indicator').classList.add('hidden');
+            } else {
+                document.getElementById(`screen-${screenNum}`).classList.remove('hidden');
+                document.getElementById('step-indicator').classList.remove('hidden');
+                document.getElementById('current-step').innerText = screenNum - 1; // Pasos del 1 al 3
+            }
+            currentScreen = screenNum;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Sistema de calificación de estrellas
+        function setRating(rating) {
+            selectedRating = rating;
+            document.getElementById('input-rating').value = rating;
+            const stars = document.querySelectorAll('.star-btn');
+            
+            stars.forEach((btn, index) => {
+                if (index < rating) {
+                    btn.classList.remove('text-slate-600');
+                    btn.classList.add('text-amber-400');
+                } else {
+                    btn.classList.remove('text-amber-400');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            const texts = ['', 'Insatisfecho 😕', 'Regular 😐', 'Bueno 🙂', 'Muy Bueno 😊', 'Excelente! 🌟'];
+            document.getElementById('rating-text').innerText = texts[rating];
+        }
+
+        function showAlert(msg) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-amber-600 text-white px-5 py-2.5 rounded-xl shadow-2xl z-50 text-xs font-semibold flex items-center gap-2 animate-bounce';
+            alertDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${msg}</span>`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        function validateScreen2() {
+            if (selectedRating === 0) {
+                showAlert('Por favor selecciona al menos una estrella de calificación.');
+                return;
+            }
+            const rapidez = document.querySelector('input[name="rapidez"]:checked');
+            if (!rapidez) {
+                showAlert('Por favor indica el tiempo de atención.');
+                return;
+            }
+            goToScreen(3);
+        }
+
+        function validateScreen3() {
+            const stock = document.getElementById('select-stock').value;
+            if (!stock) {
+                showAlert('Por favor selecciona la disponibilidad de productos.');
+                return;
+            }
+            const orden = document.querySelector('input[name="orden"]:checked');
+            if (!orden) {
+                showAlert('Por favor califica la limpieza y organización.');
+                return;
+            }
+            goToScreen(4);
+        }
+
+        function submitSurvey() {
+            // Generar código de cupón aleatorio
+            const randomCode = 'FC-' + Math.floor(100 + Math.random() * 900) + '-' + Math.floor(10 + Math.random() * 90);
+            document.getElementById('coupon-code-text').innerText = randomCode;
+
+            // Limpiar QR previo si existe
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = '';
+
+            // Generar Código QR utilizando QRCode.js
+            new QRCode(qrContainer, {
+                text: `CUPON-FERRETERIA-CUELLAR-${randomCode}-5PCT`,
+                width: 120,
+                height: 120,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            goToScreen(5);
+        }
+
+        function restartSurvey() {
+            selectedRating = 0;
+            document.getElementById('input-rating').value = '0';
+            document.getElementById('select-stock').selectedIndex = 0;
+            document.getElementById('input-comentarios').value = '';
+            document.getElementById('input-cliente').value = '';
+            
+            document.querySelectorAll('.star-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400');
+                btn.classList.add('text-slate-600');
+            });
+            document.getElementById('rating-text').innerText = 'Selecciona una estrella';
+
+            document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+
+            goToScreen(1);
+        }
+    </script>
+</body>
+<html></html>
